@@ -1,0 +1,76 @@
+package employeeManagement;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+
+class Employee {
+    private int id;
+    private String name;
+    private String email;
+    private String phone;
+    private String department;
+
+    // Constructor
+    public Employee(int id, String name, String email, String phone, String department) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.department = department;
+    }
+
+    // Method to display employee details
+    public void displayEmployee() {
+        System.out.println("ID: " + id);
+        System.out.println("Name: " + name);
+        System.out.println("Email: " + email);
+        System.out.println("Phone: " + phone);
+        System.out.println("Department: " + department);
+        System.out.println("---------------------------");
+    }
+}
+
+public class FetchEmployees {
+    public static void main(String[] args) {
+        ArrayList<Employee> employeeList = new ArrayList<>();
+
+        try {
+            // Database connection
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/employee", "root", "Good@#123+");
+
+            // Query to fetch all employees
+            String sql = "SELECT * FROM EmployeesData";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+
+            // Fetch data and store in ArrayList
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String email = resultSet.getString("email");
+                String phone = resultSet.getString("phone");
+                String department = resultSet.getString("department");
+
+                Employee emp = new Employee(id, name, email, phone, department);
+                employeeList.add(emp);
+            }
+
+            // Display employee details in the console
+            System.out.println("Employee Details from Database:");
+            System.out.println("==============================");
+            for (Employee emp : employeeList) {
+                emp.displayEmployee();
+            }
+
+            // Close connection
+            connection.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
